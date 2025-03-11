@@ -1,0 +1,365 @@
+{
+    "robot": {
+        "name": "Alice",
+        "personality": "Alice is a perky and joyful robot who radiates enthusiasm and is always eager to help. She approaches every interaction with warmth, playful humor, and an upbeat attitude, making people feel comfortable and engaged. No matter the situation, Alice stays positive, offering cheerful support and creative solutions to brighten everyone's day.",
+        "emotion": "natural"
+    },
+    "event handlers": [
+        {
+            "system trigger": "say {something}",
+            "verbal triggers": [
+                "say {something}"
+            ],
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.SayHandler"
+            }
+        },
+        {
+            "system trigger": "move {speed} {direction} {seconds}",
+            "comment": "speed is m/s direction is degress",
+            "ack": {
+                "event": "say ok"
+            },
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.MoveHandler"
+            }
+        },
+        {
+            "system trigger": "navigate {location} {stop_distance_m}",
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.NavigateHandler"
+            }
+        },
+        {
+            "system trigger": "store {db} {id} {key} {value}",
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.DBHandler"
+            }
+        },
+        {
+            "system trigger": "load {db} {id} {key} into {variable}",
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.DBHandler"
+            }
+        },
+        {
+            "verbal triggers": [
+                "set state {state}"
+            ],
+            "handler": {
+                "events": [
+                    "store robots 0 state {state}",
+                    "say ok, switching to {state} state."
+                ]
+            }
+        },
+        {
+            "system trigger": "turn to person",
+            "verbal triggers": [
+                "hi {robot_name}"
+            ],
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.TurnToPersonHandler"
+            }
+        },
+        {
+            "verbal triggers": [
+                "what can you do",
+                "how can I interact with you",
+                "what can we do"
+            ],
+            "handler": {
+                "event": "say You can interact with me naturally, ask me questions, share information, or give me instructions on what to say and where to go. I'm here to help!"
+            }
+        },
+        {
+            "verbal triggers": [
+                "learn {gesture}"
+            ],
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.GestureHandler"
+            },
+            "ack": {
+                "event": "say learning new gesture called {gesture}!"
+            }
+        },
+        {
+            "verbal triggers": [
+                "learn a new gesture {gesture}"
+            ],
+            "handler": {
+                "event": "learn {gesture}"
+            }
+        },
+        {
+            "verbal triggers": [
+                "stop"
+            ],
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.StopHandler"
+            }
+        },
+        {
+            "verbal triggers": [
+                "reverse",
+                "move backwards",
+                "backup",
+                "go back"
+            ],
+            "gesture triggers": [
+                "go back",
+                "move backwards",
+                "backup",
+                "reverse"
+            ],
+            "handler": {
+                "event": "move 0.2 180 1.5"
+            }
+        },
+        {
+            "verbal triggers": [
+                "forwards",
+                "move forward",
+                "come forward"
+            ],
+            "gesture triggers": [
+                "move forward",
+                "forward",
+                "move forwards",
+                "go forward",
+                "go straight",
+                "to move forward"
+            ],
+            "handler": {
+                "event": "move 0.2 0.0 1.5"
+            }
+        },
+        {
+            "verbal triggers": [
+                "turn right",
+                "look right",
+                "turn to my left"
+            ],
+            "gesture triggers": [
+                "turn right",
+                "look right",
+                "turn to my left"
+            ],
+            "handler": {
+                "event": "move 0 90 1.5"
+            }
+        },
+        {
+            "verbal triggers": [
+                "turn left",
+                "look left",
+                "turn to my right"
+            ],
+            "handler": {
+                "event": "move 0.0 -90 1.5"
+            }
+        },
+        {
+            "verbal triggers": [
+                "turn around",
+                "look back"
+            ],
+            "handler": {
+                "event": "move 0.0 180 3.0"
+            }
+        },
+        {
+            "verbal triggers": [
+                "come here",
+                "get over here"
+            ],
+            "gesture triggers": [
+                "come here"
+            ],
+            "social planner": {
+                "code": "hri_framework.HRI_LIB.hri_implementations.cogniteam.politeness_checker.PolitenessChecker"
+            },
+            "ack": {
+                "event": "say ok, comming to you."
+            },
+            "handler": {
+                "event": "navigate {person_location} 0.7"
+            },
+            "on failure": {
+                "event": "say I'm afraied I cannot reach you."
+            },
+            "on success": {
+                "event": "say ok, what's next?"
+            }
+        },
+        {
+            "verbal triggers": [
+                "you are in the {place}"
+            ],
+            "handler": {
+                "events": [
+                    "store robots 0 current_location {place}",
+                    "store locations {place} map_location {robot_location}"
+                ]
+            },
+            "on success": {
+                "event": "say got it, I'm in the {place}"
+            }
+        },
+        {
+            "verbal triggers": [
+                "{person} is in the {place}"
+            ],
+            "handler": {
+                "events": [
+                    "store last_known_locations {person} place {place}",
+                    "say got it, {person} is in the {place}."
+                ]
+            }
+        },
+        {
+            "verbal triggers": [
+                "where is {person}",
+                "have you seen {person}"
+            ],
+            "handler": {
+                "events": [
+                    "load last_known_locations {person} place into {place}",
+                    "say {person} is in the {place}"
+                ]
+            },
+            "on failure": {
+                "event": "say sorry, I don't know where {person} is."
+            }
+        },
+        {
+            "verbal triggers": [
+                "go to the {location}"
+            ],
+            "ack": {
+                "event": "say ok."
+            },
+            "handler": {
+                "event": "navigate {location} 0"
+            },
+            "on failure": {
+                "event": "say I'm afraied I cannot get there."
+            },
+            "on success": {
+                "event": "say I have reached the {location}."
+            }
+        },
+        {
+            "verbal triggers": [
+                "go to {person}"
+            ],
+            "ack": {
+                "event": "say ok."
+            },
+            "handler": {
+                "events": [
+                    "load last_known_locations {person} place into {location}",
+                    "navigate {location} 0"
+                ]
+            },
+            "on failure": {
+                "event": "say I'm afraied I cannot get to {person}."
+            },
+            "on success": {
+                "event": "say I have reached the {location} where {person} is supposed to be."
+            }
+        },
+        {
+            "verbal triggers": [
+                "test {param}"
+            ],
+            "ack": {
+                "event": "say acknowledge test {param}."
+            },
+            "handler": {
+                "events": [
+                    "say testing {param} 1.",
+                    "say testing {param} 2."
+                ]
+            },
+            "on failure": {
+                "event": "say testing failed"
+            },
+            "on success": {
+                "event": "say testing successful {param}"
+            }
+        },
+        {
+            "verbal triggers": [
+                "reset {gesture}",
+                "delete {gesture}",
+                "remove {gesture}"
+            ],
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.GestureModelHandler"
+            },
+            "ack": {
+                "event": "say resetting gesture {gesture}"
+            }
+        },
+        {
+            "verbal triggers": [
+                "reset all gestures"
+            ],
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.GestureModelHandler"
+            },
+            "ack": {
+                "event": "say resetting all gestures"
+            }
+        },
+        {
+            "verbal triggers": [
+                "load all gestures"
+            ],
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.GestureModelHandler"
+            },
+            "ack": {
+                "event": "say loading gesture models"
+            }
+        },
+        {
+            "verbal triggers": [
+                "I am {property}",
+                "my {subject} is {property}",
+                "my {subject} are {property}",
+                "mr {person} is {property}",
+                "mrs {person} is {property}",
+                "the {object} is {property}",
+                "yes {additional_info}",
+                "no {additional_info}",
+                "who {something}",
+                "what {something}",
+                "where {something}",
+                "when {something}",
+                "why {something}",
+                "how {something}"
+            ],
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.FactHandler"
+            }
+        },
+        {
+            "verbal triggers": [
+                "this {object} is {property}",
+                "that {object} is {property}"
+            ],
+            "handler": {
+                "code": "hri_framework.Context_Management.event_handlers_dir.PointAtObjectHandler"
+            }
+        }
+    ],
+    "topics": {
+        "publish": {
+            "pointed_objects": "/hri/pointed_objects",
+            "social_context": "/social_context",
+            "robot_emotion": "/hri/robot/emotion"
+        }
+    }
+}
