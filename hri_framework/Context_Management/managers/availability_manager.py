@@ -1,7 +1,5 @@
-from abc import ABC
 
-
-class AvailabilityManager(ABC):
+class AvailabilityManager:
 
     availability_state = dict()
 
