@@ -1,6 +1,6 @@
 from event_handlers import EventHandler
 from hri_framework.Context_Management.managers.availability_manager import AvailabilityManager
-
+from hri_framework.Context_Management.requests.hri_request_handlers import HRIBeliefSystem, HRIResponse
 
 ##
 # @brief This class is an event handler that handles user presence events
@@ -8,11 +8,11 @@ from hri_framework.Context_Management.managers.availability_manager import Avail
 #
 class UserPresenceEventHandler(EventHandler):
 
-    def handle(self, beliefSystem: HRIBeliefSystem) -> HRIResponse:
+    def handle(self, belief_system: HRIBeliefSystem) -> HRIResponse | None:
 
-        # TODO: need to understand how to extract the computer vision data from the belief system
-        for person in beliefSystem.get_data("computer_vision_data"):
-            AvailabilityManager().set_availability(person.name, person.is_seen)
+        persons = belief_system.get("person", "presence")
 
-        # TODO: need to understand what is the HRIResponse and what needs to be returned from here
-        return HRIResponse()
+        for person in persons:
+            AvailabilityManager().set_availability(person["id"], person["presence"])
+
+        return None
